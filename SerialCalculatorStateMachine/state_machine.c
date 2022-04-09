@@ -1,5 +1,11 @@
 #include "state_machine.h"
+
+#ifdef SERIAL
+#define PRINT_FUNCTION(fmt, str) serialWrite((fmt), (str)) 
+#else
 #include <stdio.h>
+#define PRINT_FUNCTION(fmt, str) printf((fmt), (str))
+#endif // SERIAL
 
 static float acum[2] = { 0.0, 0.0 };
 static float multiplicador = 1.0;
@@ -56,11 +62,11 @@ int left_digit_state(char chr) {
 			last_error = NUMBER_OVERFLOW_ERROR;
 			return fail;
 		}
-		printf("%c", chr);
+		PRINT_FUNCTION("%c", chr);
 		return repeat;
 	}
 	else if (chr == '.') {
-		printf("%c", chr);
+		PRINT_FUNCTION("%c", chr);
 		return ok;
 	}
 	else {
@@ -80,12 +86,12 @@ int right_digit_state(char chr) {
 			last_error = NUMBER_OVERFLOW_ERROR;
 			return fail;
 		}
-		printf("%c", chr);
+		PRINT_FUNCTION("%c", chr);
 		return repeat;
 	}
 	else if (chr == '+' || chr == '-' || chr == '*' || chr == '/') {
 		if (!digit_flag) {
-			printf("%c", chr);
+			PRINT_FUNCTION("%c", chr);
 			operand = chr;
 			digit_flag = 1; // Activate the flag, since you're done reading the first number
 			multiplicador = 1.0; // Reset the floating point multiplier
@@ -102,7 +108,7 @@ int right_digit_state(char chr) {
 			return fail;
 		}
 		else {
-			printf("%c", chr);
+			PRINT_FUNCTION("%c", chr);
 			digit_flag = 0; // Reset the digit flag for next operation
 			multiplicador = 1.0; // Reset the floating point multiplier
 			return done_reading;
@@ -131,7 +137,7 @@ int result_state(char chr) {
 			operation_result = acum[0] / acum[1];
 			break;
 		}
-		printf("=%f\n", operation_result);
+		PRINT_FUNCTION("=%f\n", operation_result);
 		// Reset aux variables for next operation
 		acum[0] = 0.0;
 		acum[1] = 0.0;
@@ -148,17 +154,17 @@ int result_state(char chr) {
 }
 
 int error_state(char chr) {
-	printf("\n");
+	PRINT_FUNCTION("%s", "\n");
 	switch (last_error) {
 	case PROTOCOL_ERROR:
-		printf("Error: Utiliza el siguiente formato para introducir datos: ");
-		printf("(<Numero><Operador><Numero>)=\n");
+		PRINT_FUNCTION("%s", "Error: Utiliza el siguiente formato para introducir datos: ");
+		PRINT_FUNCTION("%s", "(<Numero><Operador><Numero>)=\n");
 		break;
 	case NUMBER_OVERFLOW_ERROR:
-		printf("Error: Limite de precision alcanzado\n");
+		PRINT_FUNCTION("%s", "Error: Limite de precision alcanzado\n");
 		break;
 	case UNDEFINED_STATE_ERROR:
-		printf("Error: Estado indefinido\n");
+		PRINT_FUNCTION("%s", "Error: Estado indefinido\n");
 		break;
 	}
 	// Reset aux variables for next operation

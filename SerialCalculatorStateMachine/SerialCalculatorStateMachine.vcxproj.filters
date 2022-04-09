@@ -21,6 +21,12 @@
     <ClCompile Include="state_machine.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="serial.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="serial.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="state_machine.h">
