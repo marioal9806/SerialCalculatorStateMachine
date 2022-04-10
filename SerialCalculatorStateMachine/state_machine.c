@@ -1,9 +1,16 @@
+#include <stdio.h>
 #include "state_machine.h"
 
+#include "config.h"
+
 #ifdef SERIAL
-#define PRINT_FUNCTION(fmt, str) serialWrite((fmt), (str)) 
+#include "serial.h"
+extern unsigned char TxDBuffer[256];
+#define PRINT_FUNCTION(fmt, str) { \
+	sprintf_s(TxDBuffer, 256, (fmt), (str)); \
+	serialWrite(); \
+}
 #else
-#include <stdio.h>
 #define PRINT_FUNCTION(fmt, str) printf((fmt), (str))
 #endif // SERIAL
 
@@ -43,7 +50,7 @@ enum state_codes lookup_transitions(enum state_codes cur_state, enum ret_codes r
 
 int first_parenthesis_state(char chr) {
 	if (chr == '(') {
-		printf("(");
+		PRINT_FUNCTION("%s", "(");
 		return ok;
 	}
 	else { // Ignore any input other than left parenthesis
@@ -137,7 +144,7 @@ int result_state(char chr) {
 			operation_result = acum[0] / acum[1];
 			break;
 		}
-		PRINT_FUNCTION("=%f\n", operation_result);
+		PRINT_FUNCTION("=%f\n\r", operation_result);
 		// Reset aux variables for next operation
 		acum[0] = 0.0;
 		acum[1] = 0.0;
@@ -154,17 +161,17 @@ int result_state(char chr) {
 }
 
 int error_state(char chr) {
-	PRINT_FUNCTION("%s", "\n");
+	PRINT_FUNCTION("%s", "\n\r");
 	switch (last_error) {
 	case PROTOCOL_ERROR:
 		PRINT_FUNCTION("%s", "Error: Utiliza el siguiente formato para introducir datos: ");
-		PRINT_FUNCTION("%s", "(<Numero><Operador><Numero>)=\n");
+		PRINT_FUNCTION("%s", "(<Numero><Operador><Numero>)=\n\r");
 		break;
 	case NUMBER_OVERFLOW_ERROR:
-		PRINT_FUNCTION("%s", "Error: Limite de precision alcanzado\n");
+		PRINT_FUNCTION("%s", "Error: Limite de precision alcanzado\n\r");
 		break;
 	case UNDEFINED_STATE_ERROR:
-		PRINT_FUNCTION("%s", "Error: Estado indefinido\n");
+		PRINT_FUNCTION("%s", "Error: Estado indefinido\n\r");
 		break;
 	}
 	// Reset aux variables for next operation

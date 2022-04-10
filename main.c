@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "SerialCalculatorStateMachine/state_machine.h"
-#include "SerialCalculatorStateMachine/serial.h"
+#include "SerialCalculatorStateMachine/config.h"
 
-#define SERIAL
+#include "SerialCalculatorStateMachine/serial.h"
+#include "SerialCalculatorStateMachine/state_machine.h"
+
 
 #ifdef SERIAL
 #define READ_FUNCTION(chr_p) serialRead((chr_p))
@@ -35,7 +36,7 @@ enum ret_codes(*state[])(char) = {
 
 int main() {
 	enum state_codes cur_state = first_parenthesis;
-	enum ret_codes rc;
+	enum ret_codes rc = ok;
 	enum ret_codes (*state_fun)(char);
 
 	int ret = 0;
@@ -46,10 +47,12 @@ int main() {
 
 	char chr = 0;
 	while (chr != 8 && chr != 27) {		//ESC o Backspace terminan la ejecucion del programa
-		ret = READ_FUNCTION(&chr);
-		if (ret) { // Check for successful read
-			printf("Error: Unsuccessful read\n");
-			break;
+		if (rc != fail) {
+			ret = READ_FUNCTION(&chr);
+			if (ret) { // Check for successful read
+				printf("Error: Unsuccessful read\n");
+				break;
+			}
 		}
 
 		if (chr != 8 && chr != 27) {

@@ -1,14 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <Windows.h>
+#include <string.h>
 #include <tchar.h>
 
 #include "serial.h"
 
 // Serial variables
 HANDLE serial;
-unsigned char TxDBuffer[10];
-unsigned char RxDBuffer[10];
+extern unsigned char TxDBuffer[MAX_BYTES_PER_WRITE] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+unsigned char RxDBuffer[MAX_BYTES_PER_WRITE];
 DWORD aux = 0;
 
 DCB config;
@@ -47,6 +65,7 @@ int serialRead(char* chr) {
 	return (ret ? 0 : 1);
 }
 
-int serialWrite(char* fmt, char* str) {
-	return 0;
+int serialWrite() {
+	int ret = WriteFile(serial, &TxDBuffer, (DWORD)strlen(TxDBuffer), &aux, NULL);
+	return (ret ? 0 : 1);
 }
