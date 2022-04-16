@@ -32,10 +32,10 @@ DWORD aux = 0;
 DCB config;
 COMMTIMEOUTS touts;
 
-int init_serial() {
+int init_serial(char* com_port) {
 	//TCHAR* pcCommPort = (TCHAR *)TEXT("COM1");
 	printf("Iniciando comunicacion ...\n");
-	serial = CreateFile("COM1", GENERIC_WRITE | GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	serial = CreateFile(com_port, GENERIC_WRITE | GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (serial == INVALID_HANDLE_VALUE) {
 		printf("Error: COM Port Inaccessible\n");
 		CloseHandle(serial);

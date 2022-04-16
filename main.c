@@ -34,15 +34,19 @@ enum ret_codes(*state[])(char) = {
 	error_state
 };
 
-int main() {
+int main(int argc, char* argv[]) {
 	enum state_codes cur_state = first_parenthesis;
 	enum ret_codes rc = ok;
 	enum ret_codes (*state_fun)(char);
 
+	if (argc <= 1) {
+		printf("Error: Please provide a COM port to read from");
+	}
+
 	int ret = 0;
-	ret = init_serial();
+	ret = init_serial(argv[1]);
 	if (ret) {
-		return 0;
+		return 1;
 	}
 
 	char chr = 0;
